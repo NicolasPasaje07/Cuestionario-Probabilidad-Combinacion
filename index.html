@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combinatoria: El Desafío</title>
+    
+    <!-- Tailwind CSS para la estructura responsiva rápida -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fuente futurista de Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- CSS Personalizado para el estilo Futurista / Neón -->
+    <style>
+        :root {
+            --bg-color: #0d0a1e;
+            --text-main: #e0d7ff;
+            --neon-blue: #00cfff;
+            --neon-pink: #ff4fa3;
+            --neon-green: #00ff99;
+            --neon-yellow: #ffd93d;
+            --neon-orange: #ff7f3f;
+            --neon-purple: #c77dff;
+        }
+
+        /* ---- FONDO ARCADE CON ESTRELLAS ---- */
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--bg-color);
+            background-image:
+                radial-gradient(ellipse at 20% 50%, rgba(199, 125, 255, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(0, 207, 255, 0.07) 0%, transparent 50%),
+                radial-gradient(ellipse at 60% 80%, rgba(255, 79, 163, 0.07) 0%, transparent 50%);
+            color: var(--text-main);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Estrellas del fondo */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.6) 0%, transparent 100%),
+                radial-gradient(1px 1px at 30% 70%, rgba(255,255,255,0.5) 0%, transparent 100%),
+                radial-gradient(1.5px 1.5px at 50% 30%, rgba(255,255,255,0.7) 0%, transparent 100%),
+                radial-gradient(1px 1px at 70% 80%, rgba(255,255,255,0.4) 0%, transparent 100%),
+                radial-gradient(1px 1px at 85% 10%, rgba(255,255,255,0.6) 0%, transparent 100%),
+                radial-gradient(1.5px 1.5px at 20% 90%, rgba(255,255,255,0.5) 0%, transparent 100%),
+                radial-gradient(1px 1px at 65% 55%, rgba(255,255,255,0.4) 0%, transparent 100%),
+                radial-gradient(1px 1px at 40% 40%, rgba(255,255,255,0.5) 0%, transparent 100%),
+                radial-gradient(1.5px 1.5px at 90% 60%, rgba(255,255,255,0.6) 0%, transparent 100%),
+                radial-gradient(1px 1px at 5% 50%, rgba(255,255,255,0.5) 0%, transparent 100%),
+                radial-gradient(1px 1px at 75% 35%, rgba(200,220,255,0.6) 0%, transparent 100%),
+                radial-gradient(1px 1px at 55% 90%, rgba(200,220,255,0.4) 0%, transparent 100%),
+                radial-gradient(2px 2px at 15% 60%, rgba(255,200,255,0.3) 0%, transparent 100%),
+                radial-gradient(1px 1px at 95% 40%, rgba(255,255,255,0.5) 0%, transparent 100%);
+            pointer-events: none;
+            z-index: 0;
+            animation: twinkle 4s ease-in-out infinite alternate;
+        }
+        @keyframes twinkle {
+            0%   { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        /* Línea arcade horizontal animada (más lenta y de color, no matrix) */
+        body::after {
+            content: '';
+            position: fixed;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--neon-purple), var(--neon-pink), var(--neon-orange), transparent);
+            opacity: 0.5;
+            animation: arcade-sweep 12s linear infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+        @keyframes arcade-sweep {
+            0%   { top: -3px; }
+            100% { top: 100%; }
+        }
+
+        /* Círculos de plasma flotantes - colores arcade */
+        .plasma-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
+            animation: float-orb 15s ease-in-out infinite alternate;
+        }
+        .orb-1 { width: 450px; height: 450px; background: var(--neon-purple); top: -120px; left: -120px; animation-delay: 0s; }
+        .orb-2 { width: 350px; height: 350px; background: var(--neon-orange); bottom: -100px; right: -100px; animation-delay: -5s; }
+        .orb-3 { width: 280px; height: 280px; background: var(--neon-pink); top: 40%; left: 60%; animation-delay: -10s; }
+
+        @keyframes float-orb {
+            0%   { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(35px, 50px) scale(1.12); }
+        }
+
+        /* ---- TEXTOS NEÓN ---- */
+        .text-neon-blue {
+            color: #fff;
+            text-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-blue);
+        }
+        .text-neon-pink {
+            color: #fff;
+            text-shadow: 0 0 5px var(--neon-pink), 0 0 15px var(--neon-pink);
+        }
+        .text-neon-green {
+            color: #fff;
+            text-shadow: 0 0 5px var(--neon-green), 0 0 15px var(--neon-green);
+        }
+
+        /* Título con ciclo de colores arco iris arcade */
+        .title-glow {
+            font-family: 'Orbitron', monospace;
+            animation: title-rainbow 4s linear infinite;
+        }
+        @keyframes title-rainbow {
+            0%   { color: var(--neon-blue);   text-shadow: 0 0 15px var(--neon-blue),   0 0 40px var(--neon-blue); }
+            25%  { color: var(--neon-purple);  text-shadow: 0 0 15px var(--neon-purple), 0 0 40px var(--neon-purple); }
+            50%  { color: var(--neon-pink);    text-shadow: 0 0 15px var(--neon-pink),   0 0 40px var(--neon-pink); }
+            75%  { color: var(--neon-orange);  text-shadow: 0 0 15px var(--neon-orange), 0 0 40px var(--neon-orange); }
+            100% { color: var(--neon-blue);    text-shadow: 0 0 15px var(--neon-blue),   0 0 40px var(--neon-blue); }
+        }
+
+
+        /* ---- CAJAS Y BOTONES ---- */
+        .cyber-box {
+            background: rgba(13, 10, 30, 0.88);
+            border: 1px solid rgba(199, 125, 255, 0.5);
+            box-shadow: 0 0 14px rgba(199, 125, 255, 0.18) inset, 0 0 24px rgba(199, 125, 255, 0.12), 0 0 1px rgba(255,79,163,0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 2;
+            transition: box-shadow 0.4s ease;
+        }
+        .cyber-box:hover {
+            box-shadow: 0 0 20px rgba(199, 125, 255, 0.3) inset, 0 0 40px rgba(255, 79, 163, 0.2);
+        }
+
+        /* Esquinas decorativas en las cajas */
+        .cyber-box::before,
+        .cyber-box::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-color: var(--neon-orange);
+            border-style: solid;
+            opacity: 0.8;
+        }
+        .cyber-box::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+        .cyber-box::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+
+        .cyber-button {
+            background: transparent;
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+        }
+        /* Efecto de barrido al hover */
+        .cyber-button::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,243,255,0.15), transparent);
+            transition: left 0.4s ease;
+        }
+        .cyber-button:hover::before { left: 100%; }
+        .cyber-button:hover {
+            background: var(--neon-blue);
+            color: var(--bg-color);
+            box-shadow: 0 0 25px var(--neon-blue);
+            transform: translateY(-2px);
+        }
+        .cyber-button:active { transform: translateY(0); }
+
+        .cyber-button-pink {
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+        }
+        .cyber-button-pink::before {
+            background: linear-gradient(90deg, transparent, rgba(255,0,234,0.15), transparent);
+        }
+        .cyber-button-pink:hover {
+            background: var(--neon-pink);
+            color: var(--bg-color);
+            box-shadow: 0 0 25px var(--neon-pink);
+        }
+
+        /* Botones de opción con animación de entrada */
+        .option-btn {
+            animation: slideInUp 0.3s ease forwards;
+            opacity: 0;
+        }
+        .option-btn:nth-child(1) { animation-delay: 0.05s; }
+        .option-btn:nth-child(2) { animation-delay: 0.10s; }
+        .option-btn:nth-child(3) { animation-delay: 0.15s; }
+        .option-btn:nth-child(4) { animation-delay: 0.20s; }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Feedback de correcto/incorrecto con animación */
+        .feedback-correct {
+            animation: feedbackPop 0.4s ease;
+        }
+        .feedback-wrong {
+            animation: feedbackShake 0.5s ease;
+        }
+        @keyframes feedbackPop {
+            0%   { transform: scale(0.8); opacity: 0; }
+            60%  { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes feedbackShake {
+            0%, 100% { transform: translateX(0); }
+            20%      { transform: translateX(-8px); }
+            40%      { transform: translateX(8px); }
+            60%      { transform: translateX(-5px); }
+            80%      { transform: translateX(5px); }
+        }
+
+        /* ---- INPUTS ---- */
+        .cyber-input {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--neon-blue);
+            color: white;
+            text-align: center;
+            font-size: 1.5rem;
+            outline: none;
+            transition: border-color 0.3s;
+            font-family: 'Orbitron', monospace;
+        }
+        .cyber-input:focus {
+            border-bottom-color: var(--neon-pink);
+            box-shadow: 0 10px 10px -10px var(--neon-pink);
+        }
+
+        /* ---- CONTADOR DE EJERCICIOS ---- */
+        .exercise-counter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+        }
+        .exercise-counter .counter-label {
+            color: var(--text-main);
+            opacity: 0.7;
+        }
+        .exercise-counter .counter-num {
+            color: var(--neon-yellow);
+            text-shadow: 0 0 8px var(--neon-yellow);
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        /* Barra de progreso del nivel */
+        .progress-bar-wrap {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink));
+            box-shadow: 0 0 8px var(--neon-blue);
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ---- LEADERBOARD ---- */
+        .leaderboard-item {
+            transition: all 0.3s ease;
+            animation: slideInLeft 0.4s ease;
+        }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-15px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        .leaderboard-item.is-current {
+            border: 1px solid var(--neon-blue);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+        }
+
+        /* ---- TURNO BADGE ---- */
+        .turn-badge {
+            background: rgba(13, 10, 30, 0.92);
+            padding: 5px 20px;
+            border-radius: 9999px;
+            border: 2px solid var(--neon-yellow);
+            color: var(--neon-yellow);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-size: 0.875rem;
+            box-shadow: 0 0 14px var(--neon-yellow), 0 0 3px var(--neon-orange) inset;
+            animation: badge-glow 2s ease-in-out infinite alternate;
+            text-shadow: 0 0 8px var(--neon-yellow);
+        }
+        @keyframes badge-glow {
+            from { box-shadow: 0 0 8px var(--neon-yellow); }
+            to   { box-shadow: 0 0 22px var(--neon-yellow), 0 0 40px var(--neon-orange); }
+        }
+
+
+        /* ---- NIVEL INDICATOR ---- */
+        .level-display {
+            font-family: 'Orbitron', monospace;
+            animation: level-pulse 2s ease-in-out infinite;
+        }
+        @keyframes level-pulse {
+            0%, 100% { text-shadow: 0 0 8px var(--neon-orange); color: var(--neon-orange); }
+            50%       { text-shadow: 0 0 20px var(--neon-orange), 0 0 40px var(--neon-yellow); color: var(--neon-yellow); }
+        }
+
+        /* ---- TRANSICIÓN DE PANTALLAS ---- */
+        .screen-enter {
+            animation: screenFade 0.5s ease forwards;
+        }
+        @keyframes screenFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Ocultar pantallas (SPA) */
+        .hidden-screen {
+            display: none !important;
+        }
+
+        /* ---- PANTALLA DE RESULTADOS ---- */
+        .winner-glow {
+            animation: winner-anim 1.2s ease-in-out infinite alternate;
+        }
+        @keyframes winner-anim {
+            0%   { text-shadow: 0 0 15px var(--neon-yellow), 0 0 40px var(--neon-orange); transform: scale(1);    color: var(--neon-yellow); }
+            50%  { text-shadow: 0 0 20px var(--neon-pink),   0 0 50px var(--neon-purple); transform: scale(1.04); color: var(--neon-pink); }
+            100% { text-shadow: 0 0 15px var(--neon-blue),   0 0 40px var(--neon-purple); transform: scale(1);    color: var(--neon-blue); }
+        }
+
+
+        /* ---- SETUP SCREEN ---- */
+        .setup-input-wrap {
+            position: relative;
+        }
+        .setup-input-wrap::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 50%;
+            width: 0; height: 2px;
+            background: var(--neon-pink);
+            transition: width 0.4s ease, left 0.4s ease;
+        }
+        .setup-input-wrap:focus-within::after {
+            width: 100%; left: 0;
+        }
+
+        /* Contador de preguntas restantes en badge */
+        .remaining-badge {
+            display: inline-block;
+            background: rgba(255, 230, 0, 0.12);
+            border: 1px solid var(--neon-yellow);
+            color: var(--neon-yellow);
+            text-shadow: 0 0 6px var(--neon-yellow);
+            padding: 2px 10px;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- Orbes de plasma de fondo -->
+    <div class="plasma-orb orb-1"></div>
+    <div class="plasma-orb orb-2"></div>
+    <div class="plasma-orb orb-3"></div>
+
+    <!-- ========================================== -->
+    <!-- PANTALLA 1: INICIO Y REGISTRO DE JUGADORES -->
+    <!-- ========================================== -->
+    <div id="screen-setup" class="w-full max-w-md cyber-box p-8 rounded-xl text-center screen-enter">
+        <h1 class="text-5xl font-bold mb-1 text-neon-blue uppercase title-glow">Combinatoria</h1>
+        <h2 class="text-xl mb-8 tracking-widest text-gray-400">Protocolo de Entrenamiento</h2>
+        
+        <div class="space-y-6">
+            <div class="setup-input-wrap">
+                <label class="block text-sm text-neon-pink mb-1 text-left tracking-wider">Jugador 1</label>
+                <input type="text" id="player1" class="cyber-input w-full" placeholder="Ingresa tu alias" autocomplete="off">
+            </div>
+            <div class="setup-input-wrap">
+                <label class="block text-sm text-neon-pink mb-1 text-left tracking-wider">Jugador 2</label>
+                <input type="text" id="player2" class="cyber-input w-full" placeholder="Ingresa tu alias" autocomplete="off">
+            </div>
+            <div class="setup-input-wrap">
+                <label class="block text-sm text-neon-pink mb-1 text-left tracking-wider">Jugador 3</label>
+                <input type="text" id="player3" class="cyber-input w-full" placeholder="Ingresa tu alias" autocomplete="off">
+            </div>
+        </div>
+
+        <button onclick="startGame()" class="cyber-button w-full mt-10 py-3 font-bold text-lg rounded">
+            ▶ Iniciar Simulación
+        </button>
+        <p id="setup-error" class="text-red-500 mt-4 text-sm hidden">Debes ingresar el nombre de los 3 jugadores.</p>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- PANTALLA 2: ÁREA DE JUEGO PRINCIPAL        -->
+    <!-- ========================================== -->
+    <div id="screen-game" class="hidden-screen w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Panel Izquierdo: Leaderboard -->
+        <div class="cyber-box p-6 rounded-xl md:col-span-1 flex flex-col">
+            <h3 class="text-2xl font-bold text-neon-blue border-b border-gray-700 pb-2 mb-4 text-center" style="font-family:'Orbitron',monospace;">Clasificación</h3>
+            <ul id="leaderboard" class="space-y-4 flex-grow">
+                <!-- Se inyecta dinámicamente vía JS -->
+            </ul>
+
+            <!-- Nivel actual -->
+            <div class="mt-6 p-4 border border-gray-700 rounded text-center">
+                <span class="block text-sm text-gray-400 tracking-widest">Nivel Actual</span>
+                <span id="level-indicator" class="text-3xl font-bold text-neon-pink level-display">1</span>
+            </div>
+
+            <!-- ===== CONTADOR DE EJERCICIOS (nuevo) ===== -->
+            <div class="mt-4 p-4 border border-gray-700 rounded">
+                <div class="exercise-counter justify-center mb-2">
+                    <span class="counter-label">EJERCICIO</span>
+                    <span id="ex-current" class="counter-num">1</span>
+                    <span class="counter-label">DE</span>
+                    <span id="ex-total" class="counter-num">9</span>
+                </div>
+                <div class="progress-bar-wrap">
+                    <div id="ex-progress-bar" class="progress-bar-fill" style="width:0%"></div>
+                </div>
+                <div class="text-center mt-2">
+                    <span id="ex-remaining" class="remaining-badge">9 restantes</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Derecho: Área de Preguntas -->
+        <div class="cyber-box p-8 rounded-xl md:col-span-2 flex flex-col justify-center relative">
+            
+            <!-- Indicador de Turno -->
+            <div class="absolute top-0 left-0 w-full text-center mt-4">
+                <span class="turn-badge">
+                    Turno de: <span id="current-player-name">Jugador</span>
+                </span>
+            </div>
+
+            <!-- Contenedor de la Pregunta -->
+            <div class="mt-12 text-center">
+                <h2 id="question-text" class="text-2xl md:text-3xl font-semibold mb-8 min-h-[80px]">
+                    Cargando pregunta...
+                </h2>
+
+                <!-- Contenedor para Nivel 1 (Opciones Múltiples) -->
+                <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 hidden-screen">
+                    <!-- Botones inyectados por JS -->
+                </div>
+
+                <!-- Contenedor para Nivel 2 (Input Numérico) -->
+                <div id="input-container" class="hidden-screen flex flex-col items-center">
+                    <input type="number" id="numerical-answer" class="cyber-input w-48 mb-6" placeholder="Respuesta..." autocomplete="off">
+                    <button onclick="checkNumericalAnswer()" class="cyber-button py-2 px-8 font-bold rounded">
+                        Verificar Cómputo
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mensaje de Feedback (Correcto/Incorrecto) -->
+            <div id="feedback-msg" class="text-center text-xl font-bold h-8 mt-6"></div>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- PANTALLA 3: RESULTADOS FINALES             -->
+    <!-- ========================================== -->
+    <div id="screen-result" class="hidden-screen w-full max-w-md cyber-box p-8 rounded-xl text-center screen-enter">
+        <h1 class="text-4xl font-bold mb-2 text-neon-blue uppercase title-glow">Simulación Completa</h1>
+        
+        <div class="my-8">
+            <h2 class="text-lg text-gray-400">El Maestro de la Combinatoria es:</h2>
+            <div id="winner-name" class="text-5xl font-bold text-neon-pink my-4 winner-glow">Ganador</div>
+            <p class="text-xl">Con <span id="winner-score" class="text-neon-blue font-bold">0</span> puntos.</p>
+        </div>
+
+        <div class="border-t border-gray-700 pt-6 mb-8 text-left">
+            <h3 class="text-neon-blue font-bold mb-4 text-center tracking-widest">Puntajes Finales</h3>
+            <ul id="final-leaderboard" class="space-y-2">
+                <!-- Se inyecta dinámicamente -->
+            </ul>
+        </div>
+
+        <button onclick="location.reload()" class="cyber-button cyber-button-pink w-full py-3 font-bold text-lg rounded">
+            ↺ Reiniciar Sistema
+        </button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- LÓGICA DE JAVASCRIPT (APP STATE & MATH)    -->
+    <!-- ========================================== -->
+    <script>
+        /* --- 1. EXPERTO EN MATEMÁTICAS DISCRETAS (UTILIDADES) --- */
+        // Estas funciones son el núcleo del Nivel 2. Calculan los valores exactos.
+
+        // Función para calcular el Factorial (n!)
+        function factorial(n) {
+            if (n === 0 || n === 1) return 1;
+            let result = 1;
+            for (let i = 2; i <= n; i++) {
+                result *= i;
+            }
+            return result;
+        }
+
+        // Combinación sin repetición: C = n! / (r! * (n - r)!) -> No importa el orden
+        function combinacion(n, r) {
+            return factorial(n) / (factorial(r) * factorial(n - r));
+        }
+
+        // Variación sin repetición: V = n! / (n - r)! -> Sí importa el orden, no se usan todos
+        function variacion(n, r) {
+            return factorial(n) / factorial(n - r);
+        }
+
+        // Permutación: P = n! -> Sí importa el orden, se usan todos
+        function permutacion(n) {
+            return factorial(n);
+        }
+
+        // Permutación Circular: PC = (n-1)! 
+        function permutacionCircular(n) {
+            return factorial(n - 1);
+        }
+
+        /* --- 2. BANCO DE PREGUNTAS AMPLIADO (NIVEL 1) --- */
+        // Banco de 40 preguntas teóricas sobre los apuntes de la clase.
+        // Al iniciar cada partida se seleccionan 20 al azar, por lo que nunca se repiten igual.
+        const bancoCompleto = [
+            // --- Preguntas originales (1-20) ---
+            { q: "¿En cuál técnica de conteo NO importa el orden?", options: ["Combinación", "Permutación", "Variación", "Ninguna"], answer: "Combinación" },
+            { q: "¿En cuál técnica SÍ importa el orden y se usan TODOS los elementos?", options: ["Permutación", "Combinación", "Variación", "Probabilidad"], answer: "Permutación" },
+            { q: "¿Cuál es la fórmula de la permutación circular?", options: ["P = (n-1)!", "P = n!", "P = n! / r!", "P = n^r"], answer: "P = (n-1)!" },
+            { q: "¿Cuál es la fórmula de la combinación SIN repetición (C)?", options: ["n! / (r!(n-r)!)", "n! / (n-r)!", "(n+r-1)! / (r!(n-1)!)", "n!"], answer: "n! / (r!(n-r)!)" },
+            { q: "¿Cuál es la fórmula de la variación SIN repetición (V)?", options: ["n! / (n-r)!", "n! / (r!(n-r)!)", "n^r", "n!"], answer: "n! / (n-r)!" },
+            { q: "Si importa el orden, pero NO se incluyen todos los elementos, se llama:", options: ["Variación", "Permutación", "Combinación", "Factorial"], answer: "Variación" },
+            { q: "¿Cuál es la fórmula de la permutación CON repetición?", options: ["n! / (a!b!c!...)", "n! / (n-r)!", "n^r", "(n-1)!"], answer: "n! / (a!b!c!...)" },
+            { q: "¿Cuál es la fórmula de la variación CON repetición (VR)?", options: ["VR = n^r", "VR = n!", "VR = n! / (n-r)!", "VR = r^n"], answer: "VR = n^r" },
+            { q: "¿Cuál es la fórmula de la combinación CON repetición (CR)?", options: ["(n+r-1)! / (r!(n-1)!)", "n! / (r!(n-r)!)", "n! / (n-r)!", "n^r"], answer: "(n+r-1)! / (r!(n-1)!)" },
+            { q: "El valor matemático del factorial de cero (0!) es:", options: ["1", "0", "Infinito", "Error"], answer: "1" },
+            { q: "¿Qué rama matemática estudia cómo contar, ordenar y agrupar elementos?", options: ["Combinatoria", "Cálculo", "Álgebra", "Estadística"], answer: "Combinatoria" },
+            { q: "Para una ensalada de 3 ingredientes elegidos entre 5 (sin importar el orden), usas:", options: ["Combinación", "Permutación", "Variación", "Permutación circular"], answer: "Combinación" },
+            { q: "La contraseña de un candado (ej. 123, importa el orden, puede repetirse), es un ejemplo de:", options: ["Variación con repetición", "Combinación", "Permutación circular", "Permutación sin repetición"], answer: "Variación con repetición" },
+            { q: "Ordenar libros distintos en un estante donde caben todos, es un ejemplo de:", options: ["Permutación", "Combinación", "Variación", "Muestra"], answer: "Permutación" },
+            { q: "Sentar a varias personas alrededor de una fogata es un problema de:", options: ["Permutación circular", "Combinación", "Variación", "Permutación con repetición"], answer: "Permutación circular" },
+            { q: "¿Cuál es el valor exacto de 5! (5 factorial)?", options: ["120", "24", "60", "100"], answer: "120" },
+            { q: "En combinatoria, los conjuntos {A,B} y {B,A} se consideran EL MISMO en:", options: ["Combinaciones", "Variaciones", "Permutaciones", "Todos los anteriores"], answer: "Combinaciones" },
+            { q: "En una carrera de atletismo, calcular los posibles ocupantes del 1ro, 2do y 3er puesto requiere:", options: ["Variación", "Combinación", "Permutación circular", "Factorial"], answer: "Variación" },
+            { q: "Si en un arreglo hay elementos indistinguibles (ej. letras repetidas en la palabra OSO), usamos:", options: ["Permutación con repetición", "Combinación", "Variación", "Permutación circular"], answer: "Permutación con repetición" },
+            { q: "El símbolo matemático '!' se lee como:", options: ["Factorial", "Exclamación", "Admiración", "Multiplicador"], answer: "Factorial" },
+
+            // --- Preguntas adicionales (21-40) ---
+            { q: "¿En la combinatoria, importa el orden en una VARIACIÓN?", options: ["Sí importa el orden", "No importa el orden", "Depende del problema", "Solo si hay repetición"], answer: "Sí importa el orden" },
+            { q: "La combinatoria estudia cómo contar, ordenar y agrupar elementos de:", options: ["Un conjunto", "Una función", "Una ecuación", "Una matriz"], answer: "Un conjunto" },
+            { q: "¿Qué diferencia a la VARIACIÓN de la PERMUTACIÓN?", options: ["En la variación no se usan todos los elementos", "En la variación no importa el orden", "En la variación se repiten elementos", "No hay diferencia"], answer: "En la variación no se usan todos los elementos" },
+            { q: "¿Cuál es el resultado de 4! ?", options: ["24", "12", "48", "16"], answer: "24" },
+            { q: "En una PERMUTACIÓN, se usan:", options: ["Todos los elementos disponibles", "Solo algunos elementos", "Solo elementos distintos", "Solo 2 elementos"], answer: "Todos los elementos disponibles" },
+            { q: "¿En cuál de estas situaciones usarías una COMBINACIÓN CON repetición?", options: ["Elegir 3 sabores de helado de 5 posibles, pudiendo repetir sabor", "Ordenar 5 libros en un estante", "Asignar 3 puestos distintos a 5 personas", "Sentar personas en una mesa circular"], answer: "Elegir 3 sabores de helado de 5 posibles, pudiendo repetir sabor" },
+            { q: "En la fórmula de variación sin repetición V = n! / (n-r)!, la variable 'r' representa:", options: ["Elementos a ordenar", "Total de elementos", "Elementos repetidos", "El factorial base"], answer: "Elementos a ordenar" },
+            { q: "¿Cuál es el valor de 3!?", options: ["6", "3", "9", "1"], answer: "6" },
+            { q: "¿Cuál es la diferencia clave entre COMBINACIÓN y VARIACIÓN?", options: ["En la combinación no importa el orden; en la variación sí importa", "En la combinación importa el orden; en la variación no", "Ambas usan todos los elementos", "No hay ninguna diferencia"], answer: "En la combinación no importa el orden; en la variación sí importa" },
+            { q: "Elegir el presidente y el vicepresidente de 10 candidatos es un ejemplo de:", options: ["Variación sin repetición", "Combinación sin repetición", "Permutación circular", "Variación con repetición"], answer: "Variación sin repetición" },
+            { q: "La fórmula VR = n^r corresponde a:", options: ["Variación con repetición", "Variación sin repetición", "Permutación con repetición", "Combinación con repetición"], answer: "Variación con repetición" },
+            { q: "Para la palabra 'ANA', ¿qué tipo de permutación se aplica al contar arreglos distintos?", options: ["Permutación con repetición", "Permutación sin repetición", "Permutación circular", "Combinación"], answer: "Permutación con repetición" },
+            { q: "¿Cuántos resultados tiene 1! (factorial de uno)?", options: ["1", "0", "2", "Indefinido"], answer: "1" },
+            { q: "Si tengo 6 personas y quiero sentar 4 de ellas en sillas con orden, ¿qué técnica uso?", options: ["Variación sin repetición", "Combinación sin repetición", "Permutación circular", "Variación con repetición"], answer: "Variación sin repetición" },
+            { q: "¿Qué significa que en la PERMUTACIÓN CIRCULAR el primer elemento se fija?", options: ["Se elimina un grado de libertad, por eso es (n-1)!", "Se reduce el total a la mitad", "Se usa factorial de r", "No hay elemento fijo"], answer: "Se elimina un grado de libertad, por eso es (n-1)!" },
+            { q: "En la combinación CON repetición CR = (n+r-1)! / (r!(n-1)!), si n=3 y r=2, el resultado es:", options: ["6", "3", "9", "4"], answer: "6" },
+            { q: "¿Cuál es el valor de 6!?", options: ["720", "360", "120", "240"], answer: "720" },
+            { q: "Para armar equipos de fútbol de 11 jugadores de 20 disponibles (sin importar posición), usas:", options: ["Combinación sin repetición", "Permutación", "Variación con repetición", "Factorial"], answer: "Combinación sin repetición" },
+            { q: "En la fórmula de permutación con repetición PR = n! / (a!·b!·c!...), los factores a, b, c representan:", options: ["Las frecuencias de los elementos que se repiten", "Los índices de posición", "Los valores distintos del conjunto", "El número de grupos"], answer: "Las frecuencias de los elementos que se repiten" },
+            { q: "Si no importa el orden y se incluyen todos los elementos, la técnica es:", options: ["Permutación", "Variación", "Combinación", "Permutación circular"], answer: "Permutación" }
+        ];
+
+        /* --- 3. ESTADO GLOBAL DE LA APLICACIÓN (SPA) --- */
+        let players = []; // Arreglo para guardar {nombre, score}
+        let currentPlayerIndex = 0;
+        let currentLevel = 1;
+        let turnCounter = 0; 
+        
+        // Configuraciones del juego
+        const POINTS_L1 = 10;
+        const POINTS_L2 = 25;
+        // 20 turnos por nivel = 20 preguntas en total por nivel (entre los 3 jugadores)
+        const MAX_TURNS_PER_LEVEL = 20;
+
+        
+        let remainingL1Questions = []; // Se llena al iniciar con 20 preguntas aleatorias
+        let currentCorrectAnswerL2 = 0; // Guarda la respuesta numérica esperada en el nivel 2
+
+        // ---- Variables para el contador de ejercicios ----
+        let exercisesAnsweredInLevel = 0; // Cuántas se han respondido en el nivel actual
+
+
+        /* --- 4. CONTROLADORES DE INTERFAZ Y FLUJO --- */
+
+        // Función para cambiar de pantallas ocultando divs
+        function switchScreen(screenId) {
+            document.getElementById('screen-setup').classList.add('hidden-screen');
+            document.getElementById('screen-game').classList.add('hidden-screen');
+            document.getElementById('screen-result').classList.add('hidden-screen');
+            const el = document.getElementById(screenId);
+            el.classList.remove('hidden-screen');
+            el.classList.add('screen-enter');
+            setTimeout(() => el.classList.remove('screen-enter'), 600);
+        }
+
+        // Inicializar el juego
+        function startGame() {
+            const p1 = document.getElementById('player1').value.trim();
+            const p2 = document.getElementById('player2').value.trim();
+            const p3 = document.getElementById('player3').value.trim();
+
+            if (!p1 || !p2 || !p3) {
+                document.getElementById('setup-error').classList.remove('hidden');
+                return;
+            }
+
+            // Crear los objetos de jugador
+            players = [
+                { name: p1, score: 0, id: 0 },
+                { name: p2, score: 0, id: 1 },
+                { name: p3, score: 0, id: 2 }
+            ];
+
+            // Seleccionar 20 preguntas aleatorias del banco completo de 40
+            const shuffled = [...bancoCompleto].sort(() => Math.random() - 0.5);
+            remainingL1Questions = shuffled.slice(0, 20);
+            // También barajar la selección para sacarlas en orden aleatorio
+            remainingL1Questions.sort(() => Math.random() - 0.5);
+
+            switchScreen('screen-game');
+            updateLeaderboard();
+            updateExerciseCounter(); // Inicializar contador
+            playTurn(); // Iniciar el primer turno
+        }
+
+        // Actualizar el contador de ejercicios en pantalla
+        function updateExerciseCounter() {
+            // Nivel 1: ejercicios 1-20 | Nivel 2: ejercicios 21-40
+            const globalCurrent = currentLevel === 1
+                ? exercisesAnsweredInLevel + 1
+                : MAX_TURNS_PER_LEVEL + exercisesAnsweredInLevel + 1;
+            const globalTotal = MAX_TURNS_PER_LEVEL * 2; // 40 en total (20 por nivel)
+
+            document.getElementById('ex-current').textContent = globalCurrent;
+            document.getElementById('ex-total').textContent = globalTotal;
+            document.getElementById('ex-remaining').textContent =
+                (globalTotal - globalCurrent + 1) + ' restantes';
+            document.getElementById('ex-progress-bar').style.width =
+                ((globalCurrent - 1) / globalTotal * 100).toFixed(1) + '%';
+        }
+
+        // Actualizar la tabla de clasificación en pantalla
+        function updateLeaderboard() {
+            // Ordenar jugadores temporalmente para el ranking visual
+            let sorted = [...players].sort((a, b) => b.score - a.score);
+            const list = document.getElementById('leaderboard');
+            list.innerHTML = '';
+            
+            sorted.forEach((p, index) => {
+                let isCurrent = p.id === players[currentPlayerIndex].id;
+                let li = document.createElement('li');
+                li.className = `leaderboard-item flex justify-between items-center p-3 rounded bg-gray-800 ${isCurrent ? 'is-current' : ''}`;
+                li.innerHTML = `
+                    <span class="font-bold ${index === 0 ? 'text-neon-pink' : 'text-gray-300'}">${index + 1}. ${p.name}</span>
+                    <span class="font-bold text-neon-blue">${p.score} pts</span>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        // Lógica principal de un turno
+        function playTurn() {
+            // Actualizar UI con datos del jugador y nivel
+            document.getElementById('current-player-name').textContent = players[currentPlayerIndex].name;
+            document.getElementById('level-indicator').textContent = currentLevel;
+            document.getElementById('feedback-msg').textContent = '';
+            document.getElementById('numerical-answer').value = '';
+
+            // Limpiar vistas de pregunta
+            document.getElementById('options-container').classList.add('hidden-screen');
+            document.getElementById('input-container').classList.add('hidden-screen');
+
+            updateExerciseCounter();
+
+            if (currentLevel === 1) {
+                generateLevel1Question();
+            } else if (currentLevel === 2) {
+                generateLevel2Question();
+            }
+        }
+
+        // Generador de Nivel 1 (Conceptual)
+        function generateLevel1Question() {
+            // Si nos quedamos sin preguntas (poco probable con pocas rondas, pero por seguridad)
+            if (remainingL1Questions.length === 0) remainingL1Questions = [...bancoCompleto].sort(() => Math.random() - 0.5).slice(0, 20);
+
+            const questionData = remainingL1Questions.pop(); // Sacar una pregunta
+            document.getElementById('question-text').textContent = questionData.q;
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            optionsContainer.classList.remove('hidden-screen');
+
+            // Barajar las opciones para que la correcta no esté siempre en el mismo lugar
+            let shuffledOptions = [...questionData.options].sort(() => Math.random() - 0.5);
+
+            shuffledOptions.forEach(opt => {
+                let btn = document.createElement('button');
+                btn.className = 'cyber-button option-btn py-3 px-4 rounded text-sm md:text-base h-full';
+                btn.textContent = opt;
+                btn.onclick = () => checkMultipleChoice(opt, questionData.answer);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        // Generador de Nivel 2 (Numérico - Resolviendo problemas en tiempo real)
+        function generateLevel2Question() {
+            document.getElementById('input-container').classList.remove('hidden-screen');
+            
+            // Elegir aleatoriamente el tipo de problema (1 a 4)
+            const type = Math.floor(Math.random() * 4) + 1;
+            let n, r, questionText;
+
+            switch(type) {
+                case 1: // Combinación sin repetición
+                    // Valores controlados para que no den números gigantes
+                    n = Math.floor(Math.random() * 6) + 5; // Entre 5 y 10
+                    r = Math.floor(Math.random() * 3) + 2; // Entre 2 y 4
+                    questionText = `¿De cuántas formas se pueden elegir ${r} elementos de un grupo de ${n} sin importar el orden? (Combinación)`;
+                    currentCorrectAnswerL2 = combinacion(n, r);
+                    break;
+                case 2: // Variación sin repetición
+                    n = Math.floor(Math.random() * 5) + 5; // Entre 5 y 9
+                    r = Math.floor(Math.random() * 2) + 2; // Entre 2 y 3
+                    questionText = `¿De cuántas maneras se pueden ordenar ${r} elementos seleccionados de un total de ${n}? (Variación)`;
+                    currentCorrectAnswerL2 = variacion(n, r);
+                    break;
+                case 3: // Permutación lineal
+                    n = Math.floor(Math.random() * 4) + 4; // Entre 4 y 7
+                    questionText = `¿De cuántas formas distintas se pueden ordenar ${n} objetos en una fila? (Permutación)`;
+                    currentCorrectAnswerL2 = permutacion(n);
+                    break;
+                case 4: // Permutación circular
+                    n = Math.floor(Math.random() * 4) + 4; // Entre 4 y 7
+                    questionText = `¿De cuántas maneras se pueden sentar ${n} personas alrededor de una mesa redonda? (P. Circular)`;
+                    currentCorrectAnswerL2 = permutacionCircular(n);
+                    break;
+            }
+
+            document.getElementById('question-text').textContent = questionText;
+        }
+
+        /* --- 5. VALIDACIÓN DE RESPUESTAS --- */
+
+        function checkMultipleChoice(selected, correct) {
+            // Deshabilitar botones para evitar múltiples clics
+            const btns = document.querySelectorAll('#options-container button');
+            btns.forEach(b => b.disabled = true);
+
+            if (selected === correct) {
+                showFeedback(true, POINTS_L1);
+                players[currentPlayerIndex].score += POINTS_L1;
+            } else {
+                showFeedback(false, 0, correct);
+            }
+            
+            // Pausa breve antes del siguiente turno
+            setTimeout(advanceTurn, 2000);
+        }
+
+        function checkNumericalAnswer() {
+            const inputEl = document.getElementById('numerical-answer');
+            const userVal = parseInt(inputEl.value);
+
+            if (isNaN(userVal)) {
+                alert("Por favor, ingresa un número válido.");
+                return;
+            }
+
+            const btn = document.querySelector('#input-container button');
+            btn.disabled = true;
+            inputEl.disabled = true;
+
+            if (userVal === currentCorrectAnswerL2) {
+                showFeedback(true, POINTS_L2);
+                players[currentPlayerIndex].score += POINTS_L2;
+            } else {
+                showFeedback(false, 0, currentCorrectAnswerL2);
+            }
+
+            setTimeout(() => {
+                btn.disabled = false;
+                inputEl.disabled = false;
+                advanceTurn();
+            }, 2500);
+        }
+
+        function showFeedback(isCorrect, points, correctAnswer = null) {
+            const msgEl = document.getElementById('feedback-msg');
+            updateLeaderboard(); // Refrescar puntaje inmediatamente
+            
+            if (isCorrect) {
+                msgEl.textContent = `¡CORRECTO! +${points} pts`;
+                msgEl.className = "text-center text-xl font-bold h-8 mt-6 text-neon-green feedback-correct";
+            } else {
+                msgEl.textContent = `INCORRECTO. La respuesta era: ${correctAnswer}`;
+                msgEl.className = "text-center text-xl font-bold h-8 mt-6 text-red-500 feedback-wrong";
+            }
+        }
+
+        /* --- 6. GESTIÓN DE TURNOS Y NIVELES --- */
+
+        function advanceTurn() {
+            turnCounter++;
+            exercisesAnsweredInLevel++;
+            
+            // Verificar si el Nivel actual ha terminado
+            if (turnCounter >= MAX_TURNS_PER_LEVEL) {
+                if (currentLevel === 1) {
+                    // Pasar al Nivel 2
+                    currentLevel = 2;
+                    turnCounter = 0;
+                    exercisesAnsweredInLevel = 0; // Reiniciar contador del nivel
+                    currentPlayerIndex = 0; // Reinicia para que empiece el Jugador 1
+                    
+                    // Efecto visual de cambio de nivel
+                    document.getElementById('question-text').innerHTML = `<span class="text-neon-pink">¡NIVEL 1 COMPLETADO!</span><br>Preparando Nivel 2: Desafíos Numéricos...`;
+                    document.getElementById('options-container').classList.add('hidden-screen');
+                    
+                    setTimeout(() => {
+                        updateLeaderboard();
+                        updateExerciseCounter();
+                        playTurn();
+                    }, 3000);
+                    return;
+                } else {
+                    // Fin del Juego (Nivel 2 terminado)
+                    endGame();
+                    return;
+                }
+            }
+
+            // Cambiar al siguiente jugador (0 -> 1 -> 2 -> 0...)
+            currentPlayerIndex = (currentPlayerIndex + 1) % 3;
+            
+            updateLeaderboard();
+            playTurn();
+        }
+
+        function endGame() {
+            switchScreen('screen-result');
+            
+            // Determinar ganador
+            let sorted = [...players].sort((a, b) => b.score - a.score);
+            let winner = sorted[0];
+
+            document.getElementById('winner-name').textContent = winner.name;
+            document.getElementById('winner-score').textContent = winner.score;
+
+            // Llenar tabla final
+            const finalLista = document.getElementById('final-leaderboard');
+            finalLista.innerHTML = '';
+            sorted.forEach((p, i) => {
+                let li = document.createElement('li');
+                li.className = "flex justify-between p-2 border-b border-gray-800";
+                li.innerHTML = `<span>${i+1}. ${p.name}</span> <span class="text-neon-blue">${p.score} pts</span>`;
+                finalLista.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>
